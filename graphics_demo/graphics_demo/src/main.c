@@ -9,6 +9,13 @@ int isInside(uint16_t x1, uint16_t y1, uint16_t w, uint16_t h, uint16_t px, uint
 void enablePullUp(GPIO_TypeDef *Port, uint32_t BitNumber);
 void pinMode(GPIO_TypeDef *Port, uint32_t BitNumber, uint32_t Mode);
 
+enum GameState {
+	MAINMENU,
+	GAMESTART,
+	PAUSE,
+	GAMEOVER
+};
+
 volatile uint32_t milliseconds;
 
 const uint16_t deco1[]=
@@ -45,9 +52,27 @@ int main()
 	putImage(20,80,12,16,dg1,0,0);
 
 
-	
+	// Game Begins
 	while(1)
 	{
+		// Switch statement for our Game State
+		switch (GameState) {
+
+			case MAINMENU:
+				
+				break;
+			case GAMESTART:
+				
+				break;
+			case PAUSE:
+
+				break;
+			case GAMEOVER:
+
+				break;
+			default:
+
+		}
 		hmoved = vmoved = 0;
 		hinverted = vinverted = 0;
 		if ((GPIOB->IDR & (1 << 4))==0) // right pressed
