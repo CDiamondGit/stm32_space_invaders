@@ -1,2 +1,2 @@
 # stm32_space_invaders
-Hello
+Embedded implementation of a Space Invaders game running on an STM32 microcontroller.
