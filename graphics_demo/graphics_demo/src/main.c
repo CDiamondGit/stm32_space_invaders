@@ -1,5 +1,6 @@
 #include <stm32f031x6.h>
 #include "display.h"
+#include "sound_effects.h"
 void initClock(void);
 void initSysTick(void);
 void SysTick_Handler(void);
