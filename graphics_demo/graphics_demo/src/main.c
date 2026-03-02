@@ -29,7 +29,7 @@ void mainMenu(enum* gs) {
         int selectedOption = 0 ; 
 
         uint normal = RGBToWord(0xff,0xff,0);
-        uint highlighted = RGBToWord(0xff,0xff,0)
+        uint highlighted = RGBToWord(0xDE,0xDE,0)
         uint font1 = normal;
         uint font2 = normal;
         uint font3 = normal;
@@ -59,14 +59,16 @@ void mainMenu(enum* gs) {
                 
                 
                 if ((GPIOA->IDR & (1 << 11)) == 0) {
-                        if (selectedOption < 2) selectedOption++;
-                        delay(100);
-                }
+                        if (selectedOption < 2) {
+                                selectedOption++;
+                                delay(100);
+                        } 
                 
                 
                 if ((GPIOA->IDR & (1 << 8)) == 0) {
-                        if (selectedOption > 0) selectedOption--;
-                        delay(100);
+                        if (selectedOption > 0) {
+                                selectedOption--;
+                                delay(100);
                 }
                 
                 
@@ -77,8 +79,10 @@ void mainMenu(enum* gs) {
                         }
                         if (selectedOption == 1) {
                                 *gs = HELP;   
-                                int 1;
+                                done = 1;
+
                         }
+                        done = 1;
                         /*
                         if (selectedOption == 2) {                   
                                 delay(100);
