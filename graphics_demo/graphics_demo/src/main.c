@@ -38,13 +38,24 @@ void mainMenu(enum* gs) {
         
         while (!done) {
 
-                if () {
-
-
+                if (selectedOption ==0) {
+                        font0 = highlighted;
+                        font1 = normal;
+                        font2 = normal;
                 }
-                printTextX2("Start Game", 30, 20, font1, 0);
-                printTextX2("Help", 30, 60, font2, 0);
-                printTextX2("Quit", 30, 100, font3, 0);
+                if (selectedOption ==1) {
+                        font1 = highlighted;
+                        font2 = normal;
+                        font0 = normal;
+                }
+                if (selectedOption ==2) {
+                        font2 = highlighted;
+                        font0 = normal;
+                        font1 = normal;
+                }
+                printTextX2("Start Game", 30, 20, font0, 0);
+                printTextX2("Help", 30, 60, font1, 0);
+                printTextX2("Quit", 30, 100, font2, 0);
                 
                 
                 if ((GPIOA->IDR & (1 << 11)) == 0) {
