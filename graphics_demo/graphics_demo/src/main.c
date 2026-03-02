@@ -92,11 +92,14 @@ void mainMenu(enum* gs) {
         }
 }
 
+void help() {
+
+}
 void playing() {
         
 }
 
-void PausScreen() {
+void PauseScreen() {
         
 }
 
