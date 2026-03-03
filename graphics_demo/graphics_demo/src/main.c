@@ -2,7 +2,7 @@
 #include <stm32f031x6.h>
 #include "display.h"
 #include <stdint.h>
-
+#include <stdio.h>
 
 void initClock(void);
 void initSysTick(void);
@@ -36,6 +36,7 @@ void mainMenu(enum GameState *gs) {
         
         int done = 0;
         
+        printf("This is %d", normal);
         while (!done) {
                 
                 if (selectedOption ==0) {
@@ -53,9 +54,9 @@ void mainMenu(enum GameState *gs) {
                         font0 = normal;
                         font1 = normal;
                 }
-                printTextX2("Start Game", 30, 20, font0, 0);
-                printTextX2("Help", 30, 60, font1, 0);
-                printTextX2("Quit", 30, 100, font2, 0);
+                printTextX2("Start Game", 20, 20, font0, 0);
+                printTextX2("Help", 20, 60, font1, 0);
+                printTextX2("Quit", 20, 100, font2, 0);
                 
                 
                 if ((GPIOA->IDR & (1 << 11)) == 0) {
