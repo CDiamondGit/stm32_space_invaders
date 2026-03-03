@@ -1,9 +1,9 @@
-#ifndef FAKE
+
 #include <stm32f031x6.h>
 #include "display.h"
-#else
-#include "types.h"
-#endif
+#include <stdint.h>
+
+
 void initClock(void);
 void initSysTick(void);
 void SysTick_Handler(void);
@@ -25,19 +25,19 @@ enum GameState {
 
 enum GameState currentGameState = MAINMENU;
 
-void mainMenu(enum* gs) {
+void mainMenu(enum GameState *gs) {
         int selectedOption = 0 ; 
-
-        uint normal = RGBToWord(0xff,0xff,0);
-        uint highlighted = RGBToWord(0xDE,0xDE,0)
-        uint font1 = normal;
-        uint font2 = normal;
-        uint font3 = normal;
-
+        
+        uint16_t normal = RGBToWord(0xff,0xff,0);
+        uint16_t highlighted = RGBToWord(211,211,211);
+        uint16_t font0 = normal;
+        uint16_t font1 = normal;
+        uint16_t font2 = normal;
+        
         int done = 0;
         
         while (!done) {
-
+                
                 if (selectedOption ==0) {
                         font0 = highlighted;
                         font1 = normal;
@@ -63,12 +63,14 @@ void mainMenu(enum* gs) {
                                 selectedOption++;
                                 delay(100);
                         } 
+                }
                 
                 
                 if ((GPIOA->IDR & (1 << 8)) == 0) {
                         if (selectedOption > 0) {
                                 selectedOption--;
                                 delay(100);
+                        }
                 }
                 
                 
@@ -80,20 +82,22 @@ void mainMenu(enum* gs) {
                         if (selectedOption == 1) {
                                 *gs = HELP;   
                                 done = 1;
-
+                                
                         }
                         done = 1;
                         /*
                         if (selectedOption == 2) {                   
-                                delay(100);
-                         }*/
+                        delay(100);
+                        }*/
                 }
                 
         }
 }
 
-void help() {
 
+
+void help() {
+        
 }
 void playing() {
         
@@ -164,7 +168,7 @@ int main()
                         //runGameOver();
                         break;
                         default:
-                        
+                        break;
                 }
                 hmoved = vmoved = 0;
                 hinverted = vinverted = 0;
