@@ -25,7 +25,7 @@ enum GameState {
 
 enum GameState currentGameState = MAINMENU;
 
-void mainMenu(enum GameState *gs) {
+void mainMenu(GameState *gs) {
         int selectedOption = 0 ; 
         
         uint16_t normal = RGBToWord(0xff,0xff,0);
@@ -171,71 +171,7 @@ int main()
                         default:
                         break;
                 }
-                hmoved = vmoved = 0;
-                hinverted = vinverted = 0;
-                if ((GPIOB->IDR & (1 << 4))==0) // right pressed
-                {
-                        if (x < 110)
-                        {
-                                x = x + 1;
-                                hmoved = 1;
-                                hinverted=0;
-                        }
-                }
-                if ((GPIOB->IDR & (1 << 5))==0) // left pressed
-                {
-                        
-                        if (x > 10)
-                        {
-                                x = x - 1;
-                                hmoved = 1;
-                                hinverted=1;
-                        }
-                }
-                if ( (GPIOA->IDR & (1 << 11)) == 0) // down pressed
-                {
-                        if (y < 140)
-                        {
-                                y = y + 1;
-                                vmoved = 1;
-                                vinverted = 0;
-                        }
-                }
-                if ( (GPIOA->IDR & (1 << 8)) == 0) // up pressed
-                {
-                        if (y > 16)
-                        {
-                                y = y - 1;
-                                vmoved = 1;
-                                vinverted = 1;
-                        }
-                }
-                if ((vmoved) || (hmoved))
-                {
-                        // only redraw if there has been some movement (reduces flicker)
-                        fillRectangle(oldx,oldy,12,16,0);
-                        oldx = x;
-                        oldy = y;
-                        if (hmoved)
-                        {
-                                if (toggle)
-                                putImage(x,y,12,16,deco1,hinverted,0);
-                                else
-                                putImage(x,y,12,16,deco2,hinverted,0);
-                                
-                                toggle = toggle ^ 1;
-                        }
-                        else
-                        {
-                                putImage(x,y,12,16,deco3,0,vinverted);
-                        }
-                        // Now check for an overlap by checking to see if ANY of the 4 corners of deco are within the target area
-                        if (isInside(20,80,12,16,x,y) || isInside(20,80,12,16,x+12,y) || isInside(20,80,12,16,x,y+16) || isInside(20,80,12,16,x+12,y+16) )
-                        {
-                                printTextX2("GLUG!", 10, 20, RGBToWord(0xff,0xff,0), 0);
-                        }
-                }
-                delay(50);
+               
         }
         return 0;
 }
