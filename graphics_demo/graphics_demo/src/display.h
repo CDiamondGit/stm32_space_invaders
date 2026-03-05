@@ -1,5 +1,5 @@
 void display_begin(void);
-void delay(uint32_t dly);
+void delay(volatile uint32_t dly);
 void fillRectangle(uint16_t x,uint16_t y,uint16_t width, uint16_t height, uint16_t colour);
 void putPixel(uint16_t x, uint16_t y, uint16_t colour);
 void putImage(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint16_t *Image, int hOrientation,int vOrientation);
