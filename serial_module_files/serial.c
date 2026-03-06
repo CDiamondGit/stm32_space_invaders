@@ -66,3 +66,11 @@ void printDecimal(int32_t Value)
 	}
 	eputs(DecimalString);
 }
+
+int serial_available(void)
+{
+	if( (USART1->ISR & (1 << 5)) == 0)
+		return 0;
+	else
+		return 1;
+}

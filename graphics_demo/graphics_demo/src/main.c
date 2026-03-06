@@ -1,6 +1,7 @@
 #include <stm32f031x6.h>
 #include "display.h"
 #include "sound_effects.h"
+#include "musical_notes.h"
 void initClock(void);
 void initSysTick(void);
 void SysTick_Handler(void);
@@ -9,6 +10,7 @@ void setupIO();
 int isInside(uint16_t x1, uint16_t y1, uint16_t w, uint16_t h, uint16_t px, uint16_t py);
 void enablePullUp(GPIO_TypeDef *Port, uint32_t BitNumber);
 void pinMode(GPIO_TypeDef *Port, uint32_t BitNumber, uint32_t Mode);
+void SysTick_Handler(void)
 
 volatile uint32_t milliseconds;
 
@@ -29,6 +31,34 @@ const uint16_t dg1[]=
 	0,0,16142,16142,16142,16142,16142,16142,16142,16142,0,0,0,0,0,16142,16142,16142,16142,16142,16142,0,0,0,0,0,16142,16142,16142,16142,16142,16142,16142,16142,0,0,0,0,16142,16142,16142,1994,1994,16142,16142,16142,0,0,0,0,16142,16142,16142,1994,16142,1994,16142,16142,0,0,0,0,16142,16142,16142,1994,16142,1994,16142,16142,0,0,0,0,16142,16142,16142,1994,16142,1994,16142,16142,0,0,0,0,16142,16142,16142,1994,1994,16142,16142,16142,0,0,0,0,16142,16142,16142,16142,16142,16142,16142,16142,0,0,0,0,16142,16142,16142,1994,1994,1994,16142,16142,0,0,0,0,16142,16142,16142,1994,16142,16142,16142,16142,0,0,0,0,16142,16142,16142,1994,16142,16142,16142,16142,0,0,0,0,16142,16142,16142,1994,16142,1994,16142,16142,0,0,0,0,16142,16142,16142,1994,1994,1994,16142,16142,0,0,0,0,0,16142,16142,16142,16142,16142,16142,0,0,0,0,0,0,16142,16142,16142,16142,16142,16142,0,0,0,
 };
 
+volatile uint32_t *background_tune_notes = 0;
+volatile uint32_t *background_tune_times = 0;
+volatile uint32_t background_tune_note_count = 0;
+volatile uint32_t background_repeat_tune = 0;
+volatile uint32_t milliseconds = 0;
+volatile int current_note_timer = 0;
+volatile int current_note_index = 0;
+
+const uint32_t twinkle_notes[] = 
+{
+    C4, C4, G4, G4, A4, A4, G4,
+    F4, F4, E4, E4, D4, D4, C4,
+    G4, G4, F4, F4, E4, E4, D4,
+    G4, G4, F4, F4, E4, E4, D4,
+    C4, C4, G4, G4, A4, A4, G4,
+    F4, F4, E4, E4, D4, D4, C4
+};
+const uint32_t twinkle_times[] = 
+{
+    250, 250, 250, 250, 250, 250, 500,
+    250, 250, 250, 250, 250, 250, 500,
+    250, 250, 250, 250, 250, 250, 500,
+    250, 250, 250, 250, 250, 250, 500,
+    250, 250, 250, 250, 250, 250, 500,
+    250, 250, 250, 250, 250, 250, 600
+};
+uint32_t twinkle_note_count = 42;
+
 int main()
 {
 	int hinverted = 0;
@@ -43,6 +73,28 @@ int main()
 	initClock();
 	initSysTick();
 	setupIO();
+	initSound();
+
+	background_tune_notes = twinkle_notes;
+	background_tune_times = twinkle_times;
+	background_tune_note_count = twinkle_note_count
+	background_repeat_tune = 0;  
+
+	char serial_char;
+
+	if (serial_available())
+		serial_char = egetchar();
+	else
+		serial_char = 0;
+
+	hmoved = vmoved = 0;
+	hinverted = vinverted = 0;
+
+	if (((GPIOB->IDR & (1 << 4)) == 0) || (serial_char == 'r'))
+	{
+		// move right
+	}
+
 	putImage(20,80,12,16,dg1,0,0);
 	while(1)
 	{
@@ -203,4 +255,39 @@ void setupIO()
 	enablePullUp(GPIOB,5);
 	enablePullUp(GPIOA,11);
 	enablePullUp(GPIOA,8);
+}
+
+void SysTick_Handler(void)
+{
+    milliseconds++;
+
+    if (background_tune_notes != 0)
+    {
+        if (current_note_timer > 0)
+        {
+            current_note_timer--;
+        }
+
+        if (current_note_timer == 0)
+        {
+            current_note_index++;
+
+            if (current_note_index >= background_tune_note_count)
+            {
+                if (background_repeat_tune == 0)
+                {
+                    background_tune_notes = 0;
+                    stopSound();
+                    return;
+                }
+                else
+                {
+                    current_note_index = 0;
+                }
+            }
+
+            current_note_timer = background_tune_times[current_note_index];
+            playNote(background_tune_notes[current_note_index]);
+        }
+    }
 }
