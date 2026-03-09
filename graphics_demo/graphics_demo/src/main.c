@@ -13,7 +13,13 @@ int isInside(uint16_t x1, uint16_t y1, uint16_t w, uint16_t h, uint16_t px, uint
 void enablePullUp(GPIO_TypeDef *Port, uint32_t BitNumber);
 void pinMode(GPIO_TypeDef *Port, uint32_t BitNumber, uint32_t Mode);
 
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 160
 
+
+void clearDisplay() {
+    fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0);  
+}
 
 typedef enum  {
         MAINMENU,
@@ -21,42 +27,44 @@ typedef enum  {
         HELP,
         PAUSE,
         GAMEOVER
-} GameState;
+} PlayingState;
 
-GameState currentGameState = MAINMENU;
+PlayingState currentPlayingState = MAINMENU;
 
-void mainMenu(GameState *gs) {
+void mainMenu(PlayingState *ps) {
+
+	clearDisplay();
+
         int selectedOption = 0 ; 
         
         uint16_t normal = RGBToWord(0xff,0xff,0);
         uint16_t highlighted = RGBToWord(211,211,211);
-        uint16_t font0 = normal;
-        uint16_t font1 = normal;
-        uint16_t font2 = normal;
+        uint16_t startButton = normal;
+        uint16_t helpButton = normal;
+        uint16_t scoreButton = normal;
         
         int done = 0;
         
-        printf("This is %d", normal);
         while (!done) {
                 
                 if (selectedOption ==0) {
-                        font0 = highlighted;
-                        font1 = normal;
-                        font2 = normal;
+                        startButton = highlighted;
+                        helpButton = normal;
+                        scoreButton = normal;
                 }
                 if (selectedOption ==1) {
-                        font1 = highlighted;
-                        font2 = normal;
-                        font0 = normal;
+                        helpButton = highlighted;
+                        scoreButton = normal;
+                        startButton = normal;
                 }
                 if (selectedOption ==2) {
-                        font2 = highlighted;
-                        font0 = normal;
-                        font1 = normal;
+                        scoreButton = highlighted;
+                        startButton = normal;
+                        helpButton = normal;
                 }
-                printTextX2("Start Game", 20, 20, font0, 0);
-                printTextX2("Help", 20, 60, font1, 0);
-                printTextX2("Quit", 20, 100, font2, 0);
+                printText("Start Game", 64, 60, startButton, 0);
+                printText("Help", 64, 80, helpButton, 0);
+                printText("High Scores", 64, 100, scoreButton, 0);
                 
                 
                 if ((GPIOA->IDR & (1 << 11)) == 0) {
@@ -77,19 +85,19 @@ void mainMenu(GameState *gs) {
                 
                 if ((GPIOB->IDR & (1 << 4)) == 0) {
                         if (selectedOption == 0) {
-                                *gs = GAMESTART;
+                                *ps = GAMESTART;
                                 done = 1;
                         }
                         if (selectedOption == 1) {
-                                *gs = HELP;   
+                                *ps = HELP;   
                                 done = 1;
                                 
                         }
-                        done = 1;
-                        /*
-                        if (selectedOption == 2) {                   
-                        delay(100);
-                        }*/
+                        if (selectedOption==2) {
+				*ps = RECORD;
+				done = 1;
+			}
+                      
                 }
                 
         }
@@ -98,6 +106,22 @@ void mainMenu(GameState *gs) {
 
 
 void help() {
+	clearDisplay();
+	
+	
+
+printTextX2("HELP", 40, 0, RGBToWord(255,255,0), 0);
+
+  	 printText("MOVE THE SPACESHIP LEFT AND RIGHT WITH THE LEFT & RIGHT BUTTONS", 64, 20, RGBToWord(255,255,255), 0);
+
+  	 printText("FIRE = UP BUTTON", 64, 60, RGBToWord(255,255,255), 0);
+   	 printText("PAUSE = DOWN BUTTON", 64, 80, RGBToWord(255,255,255), 0);
+
+	 printText("EXIT HELP WITH DOWN BUTTON", 64,120, RGBToWOrd(255,255,255),0);
+
+  
+    while ((GPIOB->IDR & (1 << 11)) != 0) {
+
         
 }
 void playing() {
@@ -116,22 +140,6 @@ volatile uint32_t milliseconds;
 
 
 
-const uint16_t deco1[]=
-{
-        0,0,0,0,4,4,4,4,4,0,0,0,0,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,65415,65415,65415,248,65415,0,0,0,0,0,0,0,65415,65415,65415,65415,65415,8068,0,0,0,0,0,0,65415,65415,65415,4096,4096,0,0,0,0,0,0,0,0,65415,65415,65415,0,0,0,0,0,0,0,0,0,7936,7936,7936,0,0,0,0,0,0,0,0,7936,7936,65535,7936,0,0,0,0,0,0,0,0,7936,7936,65535,7936,7936,7936,7936,0,0,0,0,0,7936,7936,65535,65535,65535,65535,7936,0,0,0,0,0,7936,7936,7936,7936,7936,7936,7936,0,0,0,0,0,7936,7936,7936,7936,0,0,0,0,0,0,0,0,0,7936,65535,7936,0,0,0,0,0,0,0,0,0,7936,65535,7936,0,0,0,0,0,0,0,0,0,7936,65535,7936,0,0,0,0,0,0,0,0,0,7940,7940,7940,7940,0,0,0,
-};
-const uint16_t deco2[]=
-{
-        0,0,0,0,0,4,4,4,4,4,0,0,0,0,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,65415,65415,65415,248,65415,0,0,0,0,0,0,0,65415,65415,65415,65415,65415,8068,0,0,0,0,0,0,65415,65415,65415,4096,4096,0,0,0,0,0,0,0,0,65415,65415,65415,0,0,0,0,0,0,0,0,7936,7936,7936,0,0,0,0,0,0,0,0,7936,7936,65535,7936,0,0,0,0,0,0,0,0,7936,7936,65535,7936,7936,7936,7936,0,0,0,0,0,7936,7936,65535,65535,65535,65535,7936,0,0,0,0,0,7936,7936,7936,7936,7936,7936,7936,0,0,0,0,0,7936,7936,7936,7936,0,0,0,0,0,0,0,0,0,40224,7936,65535,7936,0,0,0,0,0,0,0,40224,40224,7936,65535,7936,0,0,0,0,0,0,65315,40224,40224,7936,65535,40224,0,0,0,0,0,0,0,65315,0,65315,65315,65315,65315,0,0,
-};
-const uint16_t deco3[]=
-{
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,0,0,0,0,0,0,0,0,0,0,4,4,0,0,0,0,0,0,0,0,0,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,0,0,0,0,7936,7936,4,4,4,4,4,4,7936,7936,0,0,65535,65535,4,4,4,4,4,4,65535,65535,0,0,7936,7936,4,4,4,4,4,4,7936,7936,0,0,0,0,0,4,4,4,4,0,0,0,0,0,0,0,0,0,24327,24327,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-};
-const uint16_t dg1[]=
-{
-        0,0,16142,16142,16142,16142,16142,16142,16142,16142,0,0,0,0,0,16142,16142,16142,16142,16142,16142,0,0,0,0,0,16142,16142,16142,16142,16142,16142,16142,16142,0,0,0,0,16142,16142,16142,1994,1994,16142,16142,16142,0,0,0,0,16142,16142,16142,1994,16142,1994,16142,16142,0,0,0,0,16142,16142,16142,1994,16142,1994,16142,16142,0,0,0,0,16142,16142,16142,1994,16142,1994,16142,16142,0,0,0,0,16142,16142,16142,1994,1994,16142,16142,16142,0,0,0,0,16142,16142,16142,16142,16142,16142,16142,16142,0,0,0,0,16142,16142,16142,1994,1994,1994,16142,16142,0,0,0,0,16142,16142,16142,1994,16142,16142,16142,16142,0,0,0,0,16142,16142,16142,1994,16142,16142,16142,16142,0,0,0,0,16142,16142,16142,1994,16142,1994,16142,16142,0,0,0,0,16142,16142,16142,1994,1994,1994,16142,16142,0,0,0,0,0,16142,16142,16142,16142,16142,16142,0,0,0,0,0,0,16142,16142,16142,16142,16142,16142,0,0,0,
-};
 
 int main()
 {
@@ -147,17 +155,16 @@ int main()
         initClock();
         initSysTick();
         setupIO();
-        putImage(20,80,12,16,dg1,0,0);
         
         
         // Game Begins
         while(1)
         {
                 // Switch statement for our Game State
-                switch (currentGameState){
+                switch (currentPlayingState){
                         
                         case MAINMENU:
-                        mainMenu(&currentGameState);
+                        mainMenu(&currentPlayingState);
                         break;
                         case GAMESTART:
                         //runGameStart();
