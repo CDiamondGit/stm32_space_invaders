@@ -15,15 +15,15 @@ void pinMode(GPIO_TypeDef *Port, uint32_t BitNumber, uint32_t Mode);
 
 
 
-enum GameState {
+typedef enum  {
         MAINMENU,
         GAMESTART,
         HELP,
         PAUSE,
         GAMEOVER
-};
+} GameState;
 
-enum GameState currentGameState = MAINMENU;
+GameState currentGameState = MAINMENU;
 
 void mainMenu(GameState *gs) {
         int selectedOption = 0 ; 
