@@ -121,8 +121,9 @@ void help() {
 
   
     	while ((GPIOB->IDR & (1 << 11)) != 0) {
-
+	mainMenu(&currentPlayingState);
         
+	}
 }
 void playing() {
        clearDisplay(); 
