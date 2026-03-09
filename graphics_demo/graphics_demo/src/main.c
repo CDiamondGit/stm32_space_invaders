@@ -110,7 +110,7 @@ void help() {
 	
 	
 
-printTextX2("HELP", 40, 0, RGBToWord(255,255,0), 0);
+	 printTextX2("HELP", 40, 0, RGBToWord(255,255,0), 0);
 
   	 printText("MOVE THE SPACESHIP LEFT AND RIGHT WITH THE LEFT & RIGHT BUTTONS", 64, 20, RGBToWord(255,255,255), 0);
 
@@ -120,12 +120,12 @@ printTextX2("HELP", 40, 0, RGBToWord(255,255,0), 0);
 	 printText("EXIT HELP WITH DOWN BUTTON", 64,120, RGBToWOrd(255,255,255),0);
 
   
-    while ((GPIOB->IDR & (1 << 11)) != 0) {
+    	while ((GPIOB->IDR & (1 << 11)) != 0) {
 
         
 }
 void playing() {
-        
+       clearDisplay(); 
 }
 
 void PauseScreen() {
